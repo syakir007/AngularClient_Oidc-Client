@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
 import { User, UserManager, UserManagerSettings, WebStorageStateStore } from "oidc-client";
+import { Response } from "src/app/model/response.model";
 
 @Injectable()
 export class AuthenticationsService {
     isUserDefined = false;
     _user: any;
     private _userManager: UserManager;
+    private userkey = 'oidc.user:https://localhost:5001:AngularOidcClient';
 
     constructor(){
         this._userManager = new UserManager(getOidcSetting());
@@ -45,6 +47,17 @@ export class AuthenticationsService {
 
     silentSignInAuthentication() {
         return this._userManager.signinSilentCallback();
+    }
+
+    getResponse(): Response | null
+    {
+        const responseJson = sessionStorage.getItem(this.userkey);
+        if(responseJson)
+        {
+            let response: Response = JSON.parse(responseJson);
+            return response;
+        }
+        return null;
     }
 
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Response } from '../model/response.model';
 import { AuthenticationsService } from '../oidc/services';
 
 @Component({
@@ -17,5 +18,14 @@ export class HomeComponentComponent implements OnInit {
 
   logout(){
     this._authservice.startLogout();
+  }
+
+  getresponse(){
+    const response = this._authservice.getResponse();
+    if(response) {
+      console.log(response.profile.role);
+    }
+    else
+      console.log('no response');
   }
 }
