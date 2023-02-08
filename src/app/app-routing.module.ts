@@ -5,6 +5,7 @@ import { HomeComponentComponent } from './home-component/home-component.componen
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { LogoutCallbackComponent } from './logout-callback/logout-callback.component';
 import { AuthGuard } from './oidc/guards';
+import { StaffPageComponent } from './staff-page/staff-page.component';
 
 
 const routes: Routes = [
@@ -12,6 +13,7 @@ const routes: Routes = [
  {path: 'home', component: HomeComponentComponent, canActivate:[AuthGuard]},
  {path: 'login-callback', component: AuthCallbackComponent},
  {path: 'logout-callback', component: LogoutCallbackComponent},
+ {path: 'staff-page', component: StaffPageComponent},
 ];
 
 @NgModule({

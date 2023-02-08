@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { Observable, tap } from "rxjs";
+import { catchError, from, Observable, switchMap, tap, throwError } from "rxjs";
 import { AuthenticationsService } from "../services";
 
 @Injectable()
@@ -12,19 +12,44 @@ export class AuthInterceptor implements HttpInterceptor{
         private readonly _router: Router
     ){}
 
-    intercept(
-        req: HttpRequest<any>,
-        next: HttpHandler
-    ): Observable<HttpEvent<any>> {
-        
-        if (this._authService.isLoggedIn()){
-            let newRequest = req.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${this._authService.getAccesstToken()}`,
-                },
-            });
-            return next.handle(newRequest);
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
+
+        var token = this._authService._user.access_token;
+        // token invalid
+        if (token && this._authService.tokenExpired(token)) {
+          console.log("token invalid")
+          return next.handle(request).pipe(
+            catchError(error =>{
+              if(error.status === 401){
+                console.log('token has expired')
+                return from(this._authService.refreshToken()).pipe(
+                  switchMap(token => {
+                    sessionStorage.removeItem('token');
+                    sessionStorage.setItem('token', token);
+                    request = request.clone({
+                      setHeaders:{
+                        Authorization: `Bearer ${token}`
+                      }
+                    });
+                    return next.handle(request);
+                  })
+                )
+              }
+              else{
+                return throwError(error);
+              }
+            })
+          );
         }
-        return next.handle(req);
-    }
+        //token valid
+        else{
+          console.log("token valid")
+          request = request.clone({
+            setHeaders:{
+              Authorization: `Bearer ${token}`
+            }
+          });
+        }
+        return next.handle(request)
+        }
 }

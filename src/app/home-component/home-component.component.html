@@ -7,3 +7,7 @@
 <div>
     <button (click)="getresponse()">get response</button>
 </div>
+<div>
+    <button (click)="api()">get api</button>
+</div>
+<a *ngIf="checkRole()" routerLink="/staff-page">Staff Page</a>

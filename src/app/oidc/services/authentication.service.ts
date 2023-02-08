@@ -49,6 +49,18 @@ export class AuthenticationsService {
         return this._userManager.signinSilentCallback();
     }
 
+    refreshToken(){
+        return this._userManager.signinSilent()
+          .then(user => {
+            return user.access_token
+        });
+    }
+
+    tokenExpired(token: string) {
+        const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
+        return (Math.floor((new Date).getTime() / 1000)) >= expiry;
+      }
+
     getResponse(): Response | null
     {
         const responseJson = sessionStorage.getItem(this.userkey);
@@ -59,7 +71,6 @@ export class AuthenticationsService {
         }
         return null;
     }
-
 }
 
 export function getOidcSetting(): UserManagerSettings {

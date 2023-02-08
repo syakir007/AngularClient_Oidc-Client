@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Response } from '../model/response.model';
-import { AuthenticationsService } from '../oidc/services';
+import { Observable } from 'rxjs';
+import { Role } from '../model/role.enum';
+import { AuthenticationsService, weatherApi } from '../oidc/services';
 
 @Component({
   selector: 'app-home-component',
@@ -11,9 +12,16 @@ export class HomeComponentComponent implements OnInit {
 
   constructor(
     private _authservice: AuthenticationsService,
+    private _weatherservice: weatherApi,
   ) { }
 
   ngOnInit(): void {
+  }
+
+  api(){
+    this._weatherservice.getWeatherData().subscribe(
+      response => console.log(response)
+    )
   }
 
   logout(){
@@ -27,5 +35,10 @@ export class HomeComponentComponent implements OnInit {
     }
     else
       console.log('no response');
+  }
+
+  checkRole(): boolean {
+    const user = this._authservice._user;
+    return user !== null && user.profile.role.indexOf(Role.Staff) !== -1;
   }
 }

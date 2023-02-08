@@ -8,6 +8,9 @@ import { AuthenticationsService } from './oidc/services';
 import { AuthCallbackComponent } from './auth-callback/auth-callback.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { LogoutCallbackComponent } from './logout-callback/logout-callback.component';
+import { StaffPageComponent } from './staff-page/staff-page.component';
+import { HttpClient, HttpClientModule, HttpHandler, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './oidc/interceptors';
 
 @NgModule({
   declarations: [
@@ -15,14 +18,21 @@ import { LogoutCallbackComponent } from './logout-callback/logout-callback.compo
     HomeComponentComponent,
     AuthCallbackComponent,
     LandingPageComponent,
-    LogoutCallbackComponent
+    LogoutCallbackComponent,
+    StaffPageComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [
     AuthenticationsService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
   ],
   bootstrap: [AppComponent]
 })
